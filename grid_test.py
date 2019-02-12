@@ -137,5 +137,7 @@ class test_object_grid(unittest.TestCase):
         np.testing.assert_allclose(expected_values, values)
 
 
+suite = unittest.TestLoader().loadTestsFromTestCase(test_object_grid)
+unittest.TextTestRunner(verbosity=2).run(suite)
 
 

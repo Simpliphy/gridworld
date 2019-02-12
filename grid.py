@@ -7,13 +7,11 @@ from enum import Enum
 
 class Move(Enum):
 
-    UP= [0, 0, 1, 0]
-    DOWN=[0, 0, 0, 1]
-    LEFT=[1, 0, 0, 0]
-    RIGHT=[0, 1, 0, 0]
-    STAY = [0,0,0,0]
-
-
+    UP = [0, 0, 1, 0]
+    DOWN = [0, 0, 0, 1]
+    LEFT = [1, 0, 0, 0]
+    RIGHT = [0, 1, 0, 0]
+    STAY = [0, 0, 0, 0]
 
 class Grid():
 
@@ -33,7 +31,7 @@ class Grid():
                     ])
 
         self.cost_by_move = -0.04
-        self.gamma = 0.9
+        self.gamma = 1.0
 
 
         self.grid_i_size = 3
@@ -44,19 +42,18 @@ class Grid():
     def evaluate_policy_by_iteration(self,policy):
 
         """
-        in-place change of values
+        Evaluate policy by iteration. Dynamic programming approach.
 
-
-        :param policy:
-        :return:
+        Section 4.4 Value iteration in Reinforment Learning: An introduction by Sutton
         """
+
+        # TODO use tolerance as possible break
 
         max_number_of_iteration = 100
 
-        values = np.zeros((self.grid_i_size,self.grid_j_size))
+        values = np.zeros((self.grid_i_size, self.grid_j_size))
 
         tolerance = 0.01
-
 
         for iteration in range(max_number_of_iteration):
 
@@ -76,11 +73,19 @@ class Grid():
 
                     else:
                         values[i, j] += self.cost_by_move
-                        values[i, j] +=  self.gamma*values[tuple(new_index_for_move)]
+                        values[i, j] += self.gamma*values[tuple(new_index_for_move)]
 
         return values
 
     def improve_policy(self,policy,values):
+        """
+
+        Policy Improvement p.98 section 4.2
+
+        :param policy:
+        :param values:
+        :return:
+        """
 
         possible_moves = np.array([
                             Move.LEFT.value,
@@ -100,8 +105,7 @@ class Grid():
             for i in range(self.grid_i_size):
                 for j in range(self.grid_j_size):
 
-                        temp_move = policy[i, j]
-                        initalIndex = [i, j]
+                        temp_move, initalIndex = policy[i, j], [i, j]
 
                         # evaluate possible actions
 
@@ -117,7 +121,7 @@ class Grid():
 
                             values_per_move = self._evaluate_moves(initalIndex, possible_moves, values)
 
-                            action_to_take_index =  np.argmax(values_per_move)
+                            action_to_take_index = np.argmax(values_per_move)
                             action_to_take = possible_moves[action_to_take_index]
                             value_of_action = values_per_move[action_to_take_index]
 
@@ -163,7 +167,6 @@ class Grid():
 
         return self._isIndexValid(tempIndex)
 
-
     def _isTerminalState(self, index):
 
         if self.terminal_states_rewards[tuple(index)] == 0.0 :
@@ -181,6 +184,13 @@ class Grid():
         return False
 
     def evaluate_policy_by_MonteCarlo(self,policy):
+        """
+         Small modification of section 5.1 p.113. Start the evaluation now from random but from the less
+         visited stateas it improved the convergence in this case convergence.
+
+        :param policy:
+        :return:
+        """
 
         values = self.terminal_states_rewards.copy()
         visits = self._return_initial_visits()
@@ -189,7 +199,7 @@ class Grid():
 
         for iteration in range(max_number_of_iteration):
 
-            i,j  = self._return_random_state()
+            i,j = self._return_random_state()
 
             if iteration > max_number_of_iteration/4:
 
@@ -210,7 +220,6 @@ class Grid():
 
 
         return values
-
 
     def show_values(self,values):
 

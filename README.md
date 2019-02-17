@@ -2,6 +2,12 @@
 
 
 
+## Anaconda environment
+
+```
+conda env create --file requirement.yml
+```
+
 ## Problem description
 
 The grid world problem is a good way to illustrate the fundamental aspects of reinforcement learning. The problem is to find a policy (i.e a mapping for each possible state give to an action) that maximize the payoff.  For the gridworld problem, we have two cost.The first one is associate with two specific state which are the destination and a cost by step. we are thus an agent moving in a grid trying to find to grid we the treasure (payoff of 1 unit) without falling into a hole (payoff of -1) with a cost per step that be associate with fuel in the real world.
@@ -26,7 +32,9 @@ One can evaluate a policy by iteration with the pseudo code
 
 -------------------
 
-![](./figures/pseudo_code_value_evaluation_Iteration.png){style="padding:16px"}
+![](./figures/pseudo_code_value_evaluation_Iteration.png)
+
+
 
 -----------------------
 
